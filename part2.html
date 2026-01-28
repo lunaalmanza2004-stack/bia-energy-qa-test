@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parte 2 · API Testing | Bia Energy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ESTILOS EXCLUSIVOS PARTE 2 */
+        .api-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+
+        /* Simulador estilo Postman */
+        .postman-wrapper {
+            background: #151515; 
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 1px solid #333;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', sans-serif;
+            margin-bottom: 30px;
+        }
+
+        .postman-bar {
+            background: #212121;
+            padding: 12px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .method-select {
+            background: #FFB400; /* Amarillo POST */
+            color: #000;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .url-display {
+            font-family: 'Fira Code', monospace;
+            color: #fff;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            flex-grow: 1;
+        }
+
+        .postman-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+
+        .request-pane {
+            border-right: 1px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background: #1a1a1a;
+        }
+
+        .pane-label {
+            font-size: 0.75rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        #jsonInput {
+            background: #111;
+            border: 1px solid #333;
+            color: #a5d6a7;
+            font-family: 'Fira Code', monospace;
+            padding: 15px;
+            border-radius: 4px;
+            flex-grow: 1;
+            resize: none;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        #jsonInput:focus { outline: 1px solid #555; }
+
+        .btn-send {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            align-self: flex-start;
+            transition: background 0.2s;
+        }
+        .btn-send:hover { background: #0069d9; }
+
+        .tips-box {
+            margin-top: 20px;
+            background: #252526;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 3px solid #FFB400;
+        }
+        .tips-box h4 { margin: 0 0 8px; font-size: 0.85rem; color: #FFB400; }
+        .tips-box ul { margin: 0; padding-left: 20px; font-size: 0.8rem; color: #ccc; }
+        .tips-box li { margin-bottom: 5px; }
+        .tips-box code { background: #000; padding: 2px 5px; border-radius: 3px; color: #ff7b72; }
+
+        .response-pane {
+            padding: 20px;
+            background: #111;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .response-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        
+        .status-badge { font-weight: bold; }
+        .status-success { color: #28a745; } 
+        .status-error { color: #dc3545; }   
+        .time-badge { color: #888; }
+
+        #responseOutput {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #a9b7c6;
+            white-space: pre-wrap;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .postman-main { grid-template-columns: 1fr; }
+            .request-pane { border-right: none; border-bottom: 1px solid #333; }
+        }
+
+        /* Escenarios Grid */
+        .scenarios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 40px; }
+        .scenario-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 5px solid #ccc; }
+        .sc-ok { border-color: #28a745; }
+        .sc-warn { border-color: #ffc107; }
+        .sc-fail { border-color: #dc3545; }
+        
+        .assertion-list { margin-top: 10px; padding-left: 20px; font-size: 0.85rem; color: #555; }
+        .assertion-list li { margin-bottom: 5px; }
+
+        /* Insight Box (Explicación para el reclutador) */
+        .insight-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 60px;
+            font-size: 0.9rem;
+            color: #0c4a6e;
+            display: flex;
+            gap: 15px;
+            align-items: start;
+        }
+        .insight-icon { font-size: 1.5rem; }
+
+    </style>
+</head>
+<body>
+
+    <div class="api-container">
+        
+        <header style="text-align: center; margin-bottom: 40px;">
+            <h1>Parte 2: API Testing (Postman)</h1>
+            <p style="color: #666;">Ejecución y Validación de Endpoint REST</p>
+        </header>
+
+        <h2 style="margin-bottom:15px; color:var(--dark);">1. Simulación de Petición HTTP</h2>
+        
+        <div class="postman-wrapper">
+            <div class="postman-bar">
+                <span class="method-select">POST</span>
+                <span class="url-display">https://api.bia-energy.test/users</span>
+            </div>
+
+            <div class="postman-main">
+                <div class="request-pane">
+                    <label class="pane-label">Body (raw JSON)</label>
+                    <textarea id="jsonInput">{
+    "name": "Juan Pérez",
+    "email": "juan@test.com",
+    "document": "12345678",
+    "password": "Password123"
+}</textarea>
+                    
+                    <button class="btn-send" onclick="sendRequest()">Send Request</button>
+
+                    <div class="tips-box">
+                        <h4>💡 Datos de Prueba:</h4>
+                        <ul>
+                            <li><strong>Caso Exitoso:</strong> Usa los datos por defecto.</li>
+                            <li><strong>Error 409 (Duplicado):</strong> Cambia el email a <code>duplicate@test.com</code>.</li>
+                            <li><strong>Error 400 (Formato):</strong> Elimina el <code>@</code> del email o borra el campo <code>name</code>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="response-pane">
+                    <label class="pane-label">Response Body</label>
+                    <div class="response-meta">
+                        <span id="resStatus" class="status-badge" style="color:#666">Status: Ready</span>
+                        <span id="resTime" class="time-badge">Time: --</span>
+                    </div>
+                    <div id="responseOutput">// La respuesta del servidor aparecerá aquí...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <div class="insight-icon">ℹ️</div>
+            <div>
+                <strong>Nota Técnica: ¿Por qué implementé este simulador POST?</strong>
+                <p style="margin-top:5px; line-height:1.5;">
+                    He desarrollado esta interfaz interactiva para demostrar mi comprensión práctica sobre cómo funcionan las peticiones HTTP (Verbo POST), la estructura de objetos JSON y la interpretación de códigos de estado, simulando el comportamiento real de un Backend sin necesidad de infraestructura externa.
+                </p>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom:25px; color:var(--dark);">2. Análisis de Escenarios y Validaciones</h2>
+        <p style="color:#666;">Definición de criterios de aceptación para el endpoint de registro.</p>
+        
+        <div class="scenarios-grid">
+            
+            <div class="scenario-card sc-ok">
+                <h3>✅ Test Exitoso</h3>
+                <p><strong>Status Esperado:</strong> 201 Created</p>
+                <p style="font-size:0.9rem; color:#666;">Se envían todos los campos obligatorios con valores válidos y únicos.</p>
+                <strong>Validaciones (Assertions):</strong>
+                <ul class="assertion-list">
+                    <li><code>pm.response.to.have.status(201)</code></li>
+                    <li>El body debe contener un <code>id</code> autogenerado.</li>
+                    <li>El <code>message</code> debe confirmar el éxito de la operación.</li>
+                </ul>
+            </div>
+
+            <div class="scenario-card sc-warn">
+                <h3>⚠️ Test Fallido 1: Bad Request</h3>
+                <p><strong>Status Esperado:</strong> 400 Bad Request</p>
+                <p style="font-size:0.9rem; color:#666;">El request body está incompleto o el email no tiene formato válido.</p>
+                <strong>Validaciones (Assertions):</strong>
+                <ul class="assertion-list">
+                    <li><code>pm.response.to.have.status(400)</code></li>
+                    <li>La respuesta debe detallar qué campo falló (ej: "Invalid email").</li>
+                    <li>No se debe crear ningún registro en BD.</li>
+                </ul>
+            </div>
+
+            <div class="scenario-card sc-fail">
+                <h3>⛔ Test Fallido 2: Conflicto</h3>
+                <p><strong>Status Esperado:</strong> 409 Conflict</p>
+                <p style="font-size:0.9rem; color:#666;">Se intenta registrar un email que ya existe en el sistema.</p>
+                <strong>Validaciones (Assertions):</strong>
+                <ul class="assertion-list">
+                    <li><code>pm.response.to.have.status(409)</code></li>
+                    <li>Validar código de error de negocio (ej: <code>USER_EXISTS</code>).</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom:25px; margin-top:50px; color:var(--dark);">3. Estrategia en Postman</h2>
+        <div style="background:white; padding:30px; border-radius:15px; border:1px solid #eee;">
+            <p>Para garantizar pruebas escalables y mantenibles, organizaría el workspace de la siguiente manera:</p>
+            <ul style="margin-top:15px; line-height:1.8; color:#444;">
+                <li>📂 <strong>Colecciones Modulares:</strong> Crearía una colección "Bia Energy" con carpetas separadas por dominio (Auth, Users, Billing).</li>
+                <li>🌍 <strong>Variables de Entorno:</strong> Configuración de <code>{{base_url}}</code> para alternar rápidamente entre entornos de QA, Staging y Producción.</li>
+                <li>🧪 <strong>Scripts de Prueba (Tests):</strong> Implementación de scripts automáticos en la pestaña "Tests" para validar Schema JSON y tiempos de respuesta.</li>
+                <li>🔄 <strong>Datos Dinámicos:</strong> Uso de variables aleatorias como <code>{{$randomEmail}}</code> en el Pre-request Script para evitar falsos positivos por duplicidad.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function sendRequest() {
+            const inputVal = document.getElementById('jsonInput').value;
+            const outputBox = document.getElementById('responseOutput');
+            const statusLabel = document.getElementById('resStatus');
+            const timeLabel = document.getElementById('resTime');
+
+            // Estado de carga
+            outputBox.innerText = "Sending request to api.bia-energy.test...";
+            outputBox.style.color = "#888";
+            statusLabel.innerText = "Status: Sending...";
+            statusLabel.className = "status-badge";
+            
+            setTimeout(() => {
+                let responseData;
+                let statusText;
+                let statusClass;
+                let statusCode;
+
+                try {
+                    const data = JSON.parse(inputVal);
+                    
+                    // LÓGICA DE LA API SIMULADA
+
+                    // 1. Caso Duplicado (409)
+                    if(data.email === "duplicate@test.com") {
+                        statusCode = 409;
+                        statusText = "409 Conflict";
+                        statusClass = "status-error";
+                        responseData = {
+                            "error": "Conflict",
+                            "code": "USER_EXISTS",
+                            "message": "The email address 'duplicate@test.com' is already in use."
+                        };
+                    }
+                    // 2. Caso Bad Request (400) - Email inválido o datos faltantes
+                    else if(!data.email.includes("@") || !data.name || !data.document) {
+                        statusCode = 400;
+                        statusText = "400 Bad Request";
+                        statusClass = "status-error";
+                        responseData = {
+                            "error": "Bad Request",
+                            "code": "VALIDATION_ERROR",
+                            "message": "Invalid email format or missing required fields (name, document)."
+                        };
+                    }
+                    // 3. Caso Exitoso (201)
+                    else {
+                        statusCode = 201;
+                        statusText = "201 Created";
+                        statusClass = "status-success";
+                        
+                        const now = new Date().toISOString();
+                        
+                        responseData = {
+                            "id": Math.floor(Math.random() * 10000), 
+                            "name": data.name,
+                            "email": data.email,
+                            "document": data.document,
+                            "createdAt": now,
+                            "message": "User created successfully"
+                        };
+                    }
+
+                } catch (e) {
+                    // Error de Sintaxis JSON
+                    statusCode = 400;
+                    statusText = "400 Bad Request";
+                    statusClass = "status-error";
+                    responseData = {
+                        "error": "Syntax Error",
+                        "message": "Invalid JSON format in request body."
+                    };
+                }
+
+                // Renderizar Resultado
+                statusLabel.innerText = "Status: " + statusText;
+                statusLabel.className = "status-badge " + statusClass;
+                
+                const randomTime = Math.floor(Math.random() * 120) + 40; 
+                timeLabel.innerText = "Time: " + randomTime + "ms";
+
+                outputBox.style.color = statusCode === 201 ? "#a9b7c6" : "#ff7b72";
+                outputBox.innerText = JSON.stringify(responseData, null, 4);
+
+            }, 600); 
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Suite: Diseño Moderno (Español)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #1e1e1e;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-page); 
+            margin: 0; 
+            padding: 40px 20px; 
+            color: var(--text-main); 
+            line-height: 1.6; 
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+
+      
+        header { text-align: center; margin-bottom: 60px; }
+        
+        header h1 { 
+            font-size: 2.5rem; 
+            font-weight: 800; 
+            margin: 0; 
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            background-clip: text;             
+            -webkit-background-clip: text;     
+            -webkit-text-fill-color: transparent;
+            color: transparent;               
+            letter-spacing: -1px;
+        }
+        
+        header p { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+
+        
+        .simulator-wrapper {
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 40px; 
+            margin-bottom: 80px;
+        }
+        
+       
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            padding: 30px;
+            transition: transform 0.2s ease;
+        }
+        
+       
+        
+        .form-col h3 { margin-top: 0; color: var(--text-main); font-size: 1.25rem; margin-bottom: 25px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { 
+            display: block; 
+            font-weight: 500; 
+            font-size: 0.9rem; 
+            color: var(--text-main); 
+            margin-bottom: 8px; 
+        }
+        
+        .form-group input { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 2px solid var(--border); 
+            border-radius: 8px; 
+            background: #fff; 
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus { 
+            border-color: var(--primary); 
+            outline: none; 
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); 
+        }
+        
+       
+        
+        .input-error { 
+            border-color: var(--error) !important; 
+            background-color: #fef2f2 !important; 
+        }
+        .error-text { 
+            color: var(--error); 
+            font-size: 0.85rem; 
+            margin-top: 6px; 
+            display: none; 
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-main { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            width: 100%; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            font-size: 1rem;
+            transition: background 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+        .btn-main:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+        /* COLUMNA DERECHA: MONITOR */
+        .monitor-col {
+            background: var(--code-bg); 
+            border-radius: 12px; 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+        }
+        
+        .monitor-header { 
+            background: #2d2d2d; 
+            padding: 12px 20px; 
+            border-bottom: 1px solid #333; 
+            font-size: 0.85rem; 
+            color: #9ca3af;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dots { display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #f59e0b; }
+        .dot.green { background: #10b981; }
+
+        .console-body {
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #d4d4d4;
+            height: 500px;
+            overflow-y: auto;
+        }
+
+        /* Scrollbar del monitor */
+        .console-body::-webkit-scrollbar { width: 8px; }
+        .console-body::-webkit-scrollbar-track { background: #1e1e1e; }
+        .console-body::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+
+        .log-entry { margin-bottom: 8px; padding-left: 12px; border-left: 2px solid transparent; animation: fadeSlide 0.3s ease; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        
+        /* Colores de logs */
+        .log-info { color: #60a5fa; border-color: #3b82f6; }
+        .log-success { color: #4ade80; border-color: #22c55e; }
+        .log-error { color: #f87171; border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+        .log-warn { color: #fbbf24; border-color: #f59e0b; }
+        .log-sec { color: #e879f9; border-color: #d946ef; font-weight: 600; }
+
+        /* === SECCIÓN 2: DOCUMENTACIÓN GHERKIN === */
+        .doc-section-title { 
+            text-align: center; 
+            font-size: 1.8rem; 
+            color: var(--text-main); 
+            margin-bottom: 40px; 
+            font-weight: 700;
+        }
+
+        .feature-hero {
+            background: linear-gradient(to right, #1e293b, #334155);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-hero::after {
+            content: "GHERKIN";
+            position: absolute;
+            right: -20px;
+            bottom: -40px;
+            font-size: 6rem;
+            font-weight: 900;
+            opacity: 0.05;
+            color: white;
+        }
+        .kwd-hero { color: #facc15; font-weight: bold; }
+
+        /* TARJETAS DE ESCENARIOS */
+        .scenario-grid { display: grid; gap: 20px; }
+        
+        .scenario-card { 
+            background: white; 
+            border-radius: 12px; 
+            border: 1px solid var(--border);
+            overflow: hidden; 
+            transition: all 0.2s;
+        }
+        .scenario-card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.05); transform: translateY(-2px); }
+
+        .card-head { 
+            padding: 12px 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-pos { background: #dcfce7; color: #166534; }
+        .badge-neg { background: #fee2e2; color: #991b1b; }
+        .badge-sec { background: #f3e8ff; color: #6b21a8; }
+        .badge-bound { background: #fff7ed; color: #9a3412; }
+
+        .gherkin-box { 
+            background: #f8fafc; 
+            padding: 20px 25px; 
+            margin: 0; 
+            font-family: 'Fira Code', monospace; 
+            font-size: 0.85rem; 
+            overflow-x: auto; 
+            border-bottom: 1px solid var(--border);
+            color: #334155;
+        }
+        
+        .kwd { color: #7c3aed; font-weight: 600; }
+        .str { color: #059669; }
+        .var { color: #ea580c; }
+        .cmt { color: #94a3b8; font-style: italic; }
+
+        .analysis-box { 
+            padding: 15px 25px; 
+            background: #fff; 
+            font-size: 0.9rem; 
+            color: var(--text-muted); 
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .analysis-icon { font-size: 1.2rem; }
+
+        @media (max-width: 900px) { 
+            .simulator-wrapper { grid-template-columns: 1fr; } 
+            .monitor-col { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>QA Automation Suite</h1>
+            <p>Parte 1: Pruebas Manuales y Validación Reactiva (Gherkin)</p>
+        </header>
+
+        <div class="simulator-wrapper">
+            
+            <div class="card form-col">
+                <h3>📝 Registro de Usuario</h3>
+                
+                <form id="mockForm" novalidate>
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="name" placeholder="Ej: Juan Pérez">
+                        <div class="error-text" id="err-name" style="display:none">⚠️ <span>Error</span></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="text" id="email" placeholder="ejemplo@dominio.com">
+                        <div class="error-text" id="err-email" style="display:none">⚠️ <span>Error</span></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Número de Identificación</label>
+                        <input type="text" id="idNum" placeholder="Solo números">
+                        <div class="error-text" id="err-id" style="display:none">⚠️ <span>Error</span></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="pass1" placeholder="Mínimo 6 caracteres">
+                        <div class="error-text" id="err-pass1" style="display:none">⚠️ <span>Error</span></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Confirmar Contraseña</label>
+                        <input type="password" id="pass2" placeholder="Repite la contraseña">
+                        <div class="error-text" id="err-pass2" style="display:none">⚠️ <span>Error</span></div>
+                    </div>
+                    
+                    <button type="submit" class="btn-main">Registrar Cuenta</button>
+                </form>
+            </div>
+
+            <div class="monitor-col">
+                <div class="monitor-header">
+                    <div class="dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span>gherkin-monitor — bash — 80x24</span>
+                </div>
+                <div class="console-body" id="consoleLog">
+                    <div style="margin-bottom: 20px; color: #64748b;">
+                        // Iniciando entorno QA...<br>
+                        // Feature cargada: Registro_Usuario.feature<br>
+                        // Estado: <span style="color:#4ade80">Ejecutando</span>
+                    </div>
+                    </div>
+            </div>
+        </div>
+
+        <h2 class="doc-section-title">Documentación Técnica de Escenarios</h2>
+
+        <div class="feature-hero">
+            <div style="font-family: 'Fira Code', monospace; line-height: 1.8;">
+                <span class="kwd-hero">Feature:</span> Registro de usuarios en la plataforma<br>
+                &nbsp;&nbsp;<span class="kwd-hero">As a</span> visitante del sitio web<br>
+                &nbsp;&nbsp;<span class="kwd-hero">I want to</span> registrar mis datos personales<br>
+                &nbsp;&nbsp;<span class="kwd-hero">So that</span> pueda acceder a las funcionalidades privadas
+            </div>
+        </div>
+
+        <div class="scenario-grid">
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>01. Registro Exitoso (Happy Path)</span>
+                    <span class="badge badge-pos">Positivo</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Creación de cuenta con datos válidos
+  <span class="kwd">Given</span> que el usuario accede a la página <span class="str">"/registro"</span>
+  <span class="kwd">When</span> completa el formulario con datos válidos
+  <span class="kwd">And</span> define una contraseña segura
+  <span class="kwd">Then</span> el sistema crea el registro en BD
+  <span class="kwd">And</span> redirige al <span class="str">"Dashboard"</span></pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">✅</span>
+                    <span><strong>Análisis:</strong> Flujo principal. Verifica que la funcionalidad "core" opera sin errores bajo condiciones ideales.</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>02. Email Duplicado</span>
+                    <span class="badge badge-neg">Crítico</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Intento de registro con correo existente
+  <span class="kwd">Given</span> existe un usuario <span class="str">"usuario@test.com"</span>
+  <span class="kwd">When</span> un nuevo usuario usa ese mismo email
+  <span class="kwd">Then</span> el sistema muestra error: <span class="str">"Correo ya registrado"</span></pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">🛡️</span>
+                    <span><strong>Integridad de Datos:</strong> Valida la restricción UNIQUE en la base de datos para evitar duplicidad de identidad.</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>03. Inconsistencia de Contraseñas</span>
+                    <span class="badge badge-neg">Negativo</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Validación de coincidencia
+  <span class="kwd">When</span> ingresa <span class="str">"PassA"</span> y confirma con <span class="str">"PassB"</span>
+  <span class="kwd">Then</span> el sistema impide el envío del formulario
+  <span class="kwd">And</span> alerta <span class="str">"Las contraseñas no coinciden"</span></pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">⚡</span>
+                    <span><strong>UX/Lógica:</strong> Validación frontend para prevenir errores humanos de escritura (typos).</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>04. Formato de Email Inválido</span>
+                    <span class="badge badge-neg">Negativo</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario Outline:</span> Validación de sintaxis
+  <span class="kwd">When</span> ingresa el email <span class="var">&lt;invalido&gt;</span>
+  <span class="kwd">Then</span> muestra error de formato
+  <span class="kwd">Examples:</span> <span class="str">"juan.perez"</span>, <span class="str">"@test.com"</span>, <span class="str">"mail@"</span></pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">🔡</span>
+                    <span><strong>Regex Check:</strong> Asegura que el dato almacenado cumpla con el estándar RFC 5322 para emails.</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>05. Tipo de Dato (ID)</span>
+                    <span class="badge badge-neg">Negativo</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Caracteres alfabéticos en ID
+  <span class="kwd">When</span> ingresa <span class="str">"ABC"</span> en campo numérico
+  <span class="kwd">Then</span> el sistema rechaza la entrada
+  <span class="kwd">And</span> solicita <span class="str">"Solo números"</span></pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">🔢</span>
+                    <span><strong>Data Type:</strong> Protege la BD de errores de inserción (String en columna Integer/BigInt).</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>06. Campos Obligatorios</span>
+                    <span class="badge badge-neg">Negativo</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Formulario incompleto
+  <span class="kwd">When</span> intenta enviar campos vacíos
+  <span class="kwd">Then</span> el sistema resalta los inputs en rojo
+  <span class="kwd">And</span> bloquea la petición HTTP</pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">🚫</span>
+                    <span><strong>Null Check:</strong> Asegura la integridad mínima requerida por el modelo de datos.</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>07. Contraseña Débil</span>
+                    <span class="badge badge-sec">Seguridad</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Política de contraseñas
+  <span class="kwd">When</span> ingresa clave < 6 caracteres
+  <span class="kwd">Then</span> el sistema rechaza por inseguridad</pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">🔒</span>
+                    <span><strong>Hardening:</strong> Fuerza políticas de seguridad para mitigar ataques de fuerza bruta.</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>08. SQL Injection</span>
+                    <span class="badge badge-sec">Seguridad</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Intento de SQLi
+  <span class="kwd">When</span> ingresa <span class="str">"' OR '1'='1"</span> en inputs
+  <span class="kwd">Then</span> el sistema sanitiza la entrada (Escaping)</pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">💉</span>
+                    <span><strong>Backend Security:</strong> Verifica el uso correcto de Prepared Statements / ORM.</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>09. Cross-Site Scripting (XSS)</span>
+                    <span class="badge badge-sec">Seguridad</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Inyección JS
+  <span class="kwd">When</span> ingresa <span class="str">&lt;script&gt;alert(1)&lt;/script&gt;</span>
+  <span class="kwd">Then</span> el sistema rechaza caracteres especiales</pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">🕷️</span>
+                    <span><strong>Frontend Security:</strong> Previene la ejecución de código malicioso en el navegador del cliente.</span>
+                </div>
+            </div>
+
+            <div class="scenario-card">
+                <div class="card-head">
+                    <span>10. Límite de Caracteres</span>
+                    <span class="badge badge-bound">Límite</span>
+                </div>
+                <pre class="gherkin-box">
+<span class="kwd">Scenario:</span> Boundary Testing
+  <span class="kwd">When</span> ingresa >50 caracteres en Nombre
+  <span class="kwd">Then</span> el sistema trunca o muestra error</pre>
+                <div class="analysis-box">
+                    <span class="analysis-icon">📏</span>
+                    <span><strong>Boundary Check:</strong> Verifica el comportamiento en los bordes para evitar Buffer Overflows.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const consoleDiv = document.getElementById('consoleLog');
+
+        function log(msg, type = 'log-info') {
+            const div = document.createElement('div');
+            div.className = `log-entry ${type}`;
+            div.innerHTML = `> ${msg}`;
+            consoleDiv.appendChild(div);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight; 
+        }
+
+        function toggleError(inputId, errorId, show, message = "Error") {
+            const input = document.getElementById(inputId);
+            const errorTxt = document.getElementById(errorId);
+            
+            if(show) {
+                input.classList.add('input-error');
+                errorTxt.style.display = 'flex';
+                errorTxt.querySelector('span').innerText = message;
+            } else {
+                input.classList.remove('input-error');
+                errorTxt.style.display = 'none';
+            }
+        }
+
+
+        document.getElementById('name').addEventListener('input', function(e) {
+            const val = e.target.value;
+            if(val.includes('<script>')) {
+                log("⚠️ [ESCENARIO 09] Ataque XSS detectado", "log-sec");
+                toggleError('name', 'err-name', true, "Caracteres prohibidos (<script>)");
+            } 
+            else if(val.includes("' OR '1'='1")) {
+                log("⚠️ [ESCENARIO 08] Inyección SQL detectada", "log-sec");
+                toggleError('name', 'err-name', true, "Patrón SQL peligroso detectado");
+            } 
+            else if(val.length > 50) {
+                log("📏 [ESCENARIO 10] Límite excedido (>50 caracteres)", "log-warn");
+                toggleError('name', 'err-name', true, "Límite de caracteres excedido");
+            } else {
+                toggleError('name', 'err-name', false);
+            }
+        });
+
+        document.getElementById('idNum').addEventListener('input', function(e) {
+            const val = e.target.value;
+            if(val.length > 0 && isNaN(val)) {
+                log("❌ [ESCENARIO 05] Tipo de dato inválido (Texto en campo Numérico)", "log-error");
+                toggleError('idNum', 'err-id', true, "Solo se permiten números");
+            } else {
+                toggleError('idNum', 'err-id', false);
+            }
+        });
+
+        document.getElementById('email').addEventListener('input', function(e) {
+            const val = e.target.value;
+            if(val === "usuario@test.com") {
+                log("🐞 [ESCENARIO 02] Error de restricción BD: Entrada duplicada", "log-error");
+                toggleError('email', 'err-email', true, "El usuario ya existe en BD");
+            } 
+            else if(val.length > 3 && (!val.includes('@') || !val.includes('.'))) {
+                toggleError('email', 'err-email', true, "Formato inválido (falta @ o .)");
+            } else {
+                toggleError('email', 'err-email', false);
+            }
+        });
+
+        document.getElementById('pass1').addEventListener('input', function(e) {
+            if(e.target.value.length > 0 && e.target.value.length < 6) {
+                log("🔓 [ESCENARIO 07] Política de contraseña débil", "log-warn");
+                toggleError('pass1', 'err-pass1', true, "Contraseña muy débil (< 6 caracteres)");
+            } else {
+                toggleError('pass1', 'err-pass1', false);
+            }
+        });
+
+        document.getElementById('pass2').addEventListener('input', function(e) {
+            const p1 = document.getElementById('pass1').value;
+            const p2 = e.target.value;
+            if(p2.length > 0 && p1 !== p2) {
+                log("❌ [ESCENARIO 03] Las contraseñas no coinciden", "log-error");
+                toggleError('pass2', 'err-pass2', true, "Las contraseñas no coinciden");
+            } else {
+                toggleError('pass2', 'err-pass2', false);
+                if(p2.length > 0) log("✅ Coincidencia de contraseñas verificada", "log-success");
+            }
+        });
+
+        document.getElementById('mockForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            log("-----------------------------------", "log-info");
+            log("🔄 Procesando solicitud de registro...", "log-info");
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const id = document.getElementById('idNum').value;
+            const p1 = document.getElementById('pass1').value;
+            
+            let hasError = false;
+
+            if(!name) { toggleError('name', 'err-name', true, "Requerido"); hasError = true; }
+            if(!email) { toggleError('email', 'err-email', true, "Requerido"); hasError = true; }
+            if(!id) { toggleError('idNum', 'err-id', true, "Requerido"); hasError = true; }
+            if(!p1) { toggleError('pass1', 'err-pass1', true, "Requerido"); hasError = true; }
+
+            if(hasError) {
+                log("❌ [ESCENARIO 06] Null Pointer / Faltan campos obligatorios", "log-error");
+            } else {
+                const errorsVisible = document.querySelectorAll('.input-error').length > 0;
+                if(errorsVisible) {
+                    log("❌ Solicitud bloqueada: Hay errores de validación", "log-error");
+                } else {
+                    log("✅ [ESCENARIO 01] ¡Camino Feliz Exitoso!", "log-success");
+                    log("🚀 HTTP 201 Creado -> Redirigiendo al Dashboard...", "log-success");
+                    alert("¡Prueba Exitosa! Usuario Registrado.");
+                }
+            }
+        });
+    </script>
+</body>
+</html>

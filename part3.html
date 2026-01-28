@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parte 3 · SQL & DB | Bia Energy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bia-cyan: #04cebd;
+            --bia-dark: #0f172a;
+            --bia-panel: #1e293b;
+            --bia-border: #334155;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .sql-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        header { text-align: center; margin-bottom: 40px; }
+        header h1 { color: var(--bia-dark); margin: 0; font-size: 2.2rem; letter-spacing: -1px; }
+        header p { color: #64748b; font-size: 1.1rem; margin-top: 10px; }
+
+        .sql-ide-wrapper {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            background: var(--bia-dark);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--bia-border);
+            min-height: 600px;
+            margin-bottom: 60px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .sidebar { 
+            background: #111827; 
+            border-right: 1px solid var(--bia-border); 
+            padding: 20px; 
+            color: var(--text-muted); 
+            font-size: 0.85rem; 
+        }
+        
+        .db-node { margin-bottom: 15px; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .table-node { margin-left: 12px; color: #e5e7eb; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .columns-list { margin-left: 28px; border-left: 1px solid #374151; padding-left: 12px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .col-row { display: flex; flex-direction: column; line-height: 1.4; }
+        .col-meta { display: flex; gap: 8px; align-items: center; }
+        .pk { color: #fbbf24; font-weight: bold; font-size: 0.75rem; }
+        .col-name { color: #60a5fa; }
+        .col-type { color: #4ade80; opacity: 0.8; }
+        .col-comment { color: #6b7280; font-size: 0.75rem; font-style: italic; }
+
+        .main-editor { display: flex; flex-direction: column; background: var(--bia-dark); position: relative; }
+        
+        .toolbar { 
+            background: #1f2937; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bia-border); 
+        }
+        .tab-active { 
+            background: var(--bia-dark); color: #fff; padding: 8px 20px; border-radius: 6px 6px 0 0; border-top: 2px solid var(--bia-cyan); font-size: 0.8rem;
+        }
+        
+        .btn-run { 
+            background: var(--bia-cyan); color: #000; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; transition: 0.2s;
+        }
+        .btn-run:hover { background: #2dd4bf; transform: translateY(-1px); }
+
+        .code-area { flex-grow: 1; padding: 20px; display: flex; flex-direction: column; }
+        
+        .quick-queries { display: flex; gap: 10px; margin-bottom: 15px; }
+        .chip { 
+            background: #374151; color: #e5e7eb; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; border: 1px solid #4b5563; transition: 0.2s; font-family: 'Inter', sans-serif;
+        }
+        .chip:hover { background: #4b5563; border-color: var(--bia-cyan); color: #fff; }
+
+        textarea#sqlInput { 
+            width: 100%; height: 140px; background: transparent; border: none; color: #e2e8f0; font-family: 'Fira Code', monospace; font-size: 0.95rem; resize: none; outline: none; line-height: 1.6;
+        }
+
+        .results-area { 
+            background: #0b1120; height: 320px; border-top: 1px solid var(--bia-border); overflow: auto; position: relative;
+        }
+        
+        .result-header { 
+            background: #1f2937; padding: 8px 20px; font-size: 0.75rem; color: #9ca3af; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; border-bottom: 1px solid var(--bia-border);
+        }
+        
+        .sql-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; color: #d1d5db; }
+        .sql-table th { background: #111827; text-align: left; padding: 10px 20px; border-bottom: 1px solid #374151; color: #fff; font-weight: 600; position: sticky; top: 33px; z-index: 5; }
+        .sql-table td { padding: 10px 20px; border-bottom: 1px solid #1f2937; }
+        .sql-table tr:hover { background: #1e293b; }
+
+        .pro-tooltip {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--bia-cyan);
+            border-left: 5px solid var(--bia-cyan);
+            color: #fff;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            display: flex; gap: 15px; align-items: flex-start;
+            z-index: 100;
+            opacity: 0; animation: slideIn 0.4s forwards;
+            font-family: 'Inter', sans-serif;
+            max-width: 350px;
+            pointer-events: none;
+        }
+        
+        .tooltip-icon { 
+            font-size: 1.5rem; 
+            background: linear-gradient(135deg, #04cebd, #2dd4bf);
+            background-clip: text; 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tooltip-content strong { display: block; color: var(--bia-cyan); margin-bottom: 5px; font-size: 0.95rem; }
+        .tooltip-content span { color: #cbd5e1; line-height: 1.5; font-size: 0.85rem; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .expert-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 60px;
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            align-items: start;
+        }
+
+        .avatar-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tech-girl-img { 
+            width: 100%; 
+            height: auto;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 16px; 
+            box-shadow: 0 20px 40px rgba(4, 206, 189, 0.2); 
+        }
+        
+        .content-column { display: flex; flex-direction: column; gap: 20px; }
+        
+        .intro-text { 
+            background: #f8fafc; 
+            padding: 20px; 
+            border-radius: 12px; 
+            border-left: 5px solid #0f172a; 
+            color: #334155; 
+            line-height: 1.6; 
+            font-size: 1rem; 
+        }
+        
+        .cards-grid { display: grid; gap: 15px; }
+        
+        .info-card { 
+            background: #fff; 
+            padding: 15px 20px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 10px; 
+            transition: all 0.2s; 
+            border-left: 4px solid transparent;
+        }
+        .info-card:hover { 
+            transform: translateX(5px); 
+            border-left-color: var(--bia-cyan); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+        }
+        .info-card h3 { margin: 0 0 5px 0; font-size: 1rem; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+        .info-card p { margin: 0; font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+
+        @media (max-width: 900px) { 
+            .sql-ide-wrapper { grid-template-columns: 1fr; } 
+            .sidebar { display: none; } 
+            .expert-section { grid-template-columns: 1fr; } 
+            .tech-girl-img { max-height: 300px; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sql-container">
+        
+        <header>
+            <h1>Parte 3: Base de Datos (SQL)</h1>
+            <p>Escenario: Tabla Users | Actividades de Consulta</p>
+        </header>
+
+        <h2 style="margin-bottom:20px; color:#0f172a;">1. SQL Playground</h2>
+        
+        <div class="sql-ide-wrapper">
+            <div class="sidebar">
+                <div class="db-node">
+                    <span>🛢️</span> Bia_Energy_Clients_DB
+                </div>
+                
+                <div class="table-node">
+                    <span>📅</span> public.users
+                </div>
+                
+                <div class="columns-list">
+                    <div class="col-row">
+                        <div class="col-meta">
+                            <span class="pk">PK</span> 
+                            <span class="col-name">id</span> 
+                            <span class="col-type">[int]</span>
+                        </div>
+                        <span class="col-comment">// ID Cliente</span>
+                    </div>
+
+                    <div class="col-row">
+                        <div class="col-meta">
+                            <span class="col-name">name</span> 
+                            <span class="col-type">[varchar]</span>
+                        </div>
+                        <span class="col-comment">// Nombre</span>
+                    </div>
+
+                    <div class="col-row">
+                        <div class="col-meta">
+                            <span class="col-name">email</span> 
+                            <span class="col-type">[varchar]</span>
+                        </div>
+                        <span class="col-comment">// Login / Contacto</span>
+                    </div>
+
+                    <div class="col-row">
+                        <div class="col-meta">
+                            <span class="col-name">document</span> 
+                            <span class="col-type">[varchar]</span>
+                        </div>
+                        <span class="col-comment">// NIT / Cédula</span>
+                    </div>
+
+                    <div class="col-row">
+                        <div class="col-meta">
+                            <span class="col-name">created_at</span> 
+                            <span class="col-type">[timestamp]</span>
+                        </div>
+                        <span class="col-comment">// Alta sistema</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-editor">
+                <div class="toolbar">
+                    <div class="tab-active">query_editor.sql</div>
+                    <button class="btn-run" onclick="runQuery()">▶ Ejecutar</button>
+                </div>
+
+                <div class="code-area">
+                    <div class="quick-queries">
+                        <span class="chip" onclick="setQuery(1)">🔍 Buscar por Email</span>
+                        <span class="chip" onclick="setQuery(2)">📊 Contar Usuarios Hoy</span>
+                        <span class="chip" onclick="setQuery(3)">📑 Ver Todos</span>
+                    </div>
+                    <textarea id="sqlInput" spellcheck="false" placeholder="-- Escribe tu consulta aquí..."></textarea>
+                </div>
+
+                <div class="results-area" id="resultsArea">
+                    <div class="result-header">
+                        <span id="statusMsg">Estado: Listo</span>
+                        <span id="timerMsg"></span>
+                    </div>
+                    <div id="tableOutput">
+                        <div style="padding: 80px; text-align: center; font-style: italic; color: #64748b;">
+                            Presiona "Ejecutar" para visualizar los datos.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom:10px; color:#0f172a;">2. Importancia de SQL en QA</h2>
+        
+        <div class="expert-section">
+            <div class="avatar-container">
+                <div class="blob-bg"></div>
+                <img src="imagen parte 3.png" alt="QA Engineer" class="tech-girl-img">
+            </div>
+
+            <div class="content-column">
+                <div class="intro-text">
+                    <strong>Es fundamental que QA conozca bases de datos</strong> para validar la integridad, persistencia y precisión de la información. El conocimiento en SQL permite verificar transacciones directamente en el backend, acelerar la detección de errores y garantizar que los datos se almacenan correctamente.
+                </div>
+
+                <div class="cards-grid">
+                    <div class="info-card">
+                        <h3>🔍 Verificación Directa (Backend)</h3>
+                        <p>Permite confirmar que lo que muestra la UI coincide con la BD.</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>🛡️ Validación de Integridad</h3>
+                        <p>Asegura que no haya pérdida de datos ni duplicados inválidos.</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>🧪 Creación de Datos de Prueba</h3>
+                        <p>Facilita la generación masiva de escenarios complejos vía SQL.</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>⏱️ Optimización del Tiempo</h3>
+                        <p>Validación masiva de registros en milisegundos vs manual.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>🐛 Detección Temprana</h3>
+                        <p>Identificar problemas de estructura antes de que afecten al usuario.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const today = new Date().toISOString().split('T')[0]; 
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        
+        const dbData = [
+            { id: 101, name: 'Luna Almanza', email: 'luna@bia.test', document: '100012300', created_at: `${today} 09:30:00` },
+            { id: 102, name: 'Juan Pérez', email: 'juan@test.com', document: '12345678', created_at: '2023-11-01 14:15:00' },
+            { id: 103, name: 'Carlos Ruiz', email: 'carlos@test.com', document: '87654321', created_at: `${today} 10:05:00` },
+            { id: 104, name: 'Ana Gomez', email: 'ana@example.com', document: '99887766', created_at: `${today} 11:20:00` },
+            { id: 105, name: 'Sofia CEO', email: 'sofia@bia.test', document: '11223344', created_at: '2023-10-20 08:00:00' },
+            { id: 106, name: 'Empresa X', email: 'contacto@empresax.com', document: '900123456', created_at: `${yesterday} 16:45:00` },
+            { id: 107, name: 'Jorge Dev', email: 'dev.jorge@test.com', document: '55667788', created_at: '2023-11-01 10:00:00' },
+            { id: 108, name: 'Maria Fin', email: 'maria.fin@bia.test', document: '44556677', created_at: `${today} 12:30:00` },
+            { id: 109, name: 'Pedro Log', email: 'pedro@logistica.com', document: '33445566', created_at: `${yesterday} 09:15:00` },
+            { id: 110, name: 'Laura Adm', email: 'admin@bia.test', document: '22334455', created_at: '2023-10-20 14:20:00' }
+        ];
+
+        let typeInterval;
+        
+        function setQuery(type) {
+            const input = document.getElementById('sqlInput');
+            let text = "";
+            
+            if(type === 1) {
+                text = "SELECT * FROM users\nWHERE email = 'juan@test.com';";
+            }
+            else if(type === 2) {
+                text = "SELECT * FROM users\nWHERE DATE(created_at) = CURRENT_DATE;";
+            }
+            else {
+                text = "SELECT * FROM users;";
+            }
+            
+            input.value = "";
+            clearInterval(typeInterval);
+            let i = 0;
+            typeInterval = setInterval(() => {
+                input.value += text.charAt(i);
+                input.scrollTop = input.scrollHeight;
+                i++;
+                if (i > text.length) clearInterval(typeInterval);
+            }, 20);
+        }
+
+        function runQuery() {
+            const rawQuery = document.getElementById('sqlInput').value;
+            const query = rawQuery.toLowerCase();
+            const output = document.getElementById('tableOutput');
+            const status = document.getElementById('statusMsg');
+            
+            document.querySelectorAll('.pro-tooltip').forEach(el => el.remove());
+            output.innerHTML = "";
+            status.innerText = "Ejecutando...";
+            
+            setTimeout(() => {
+                let results = [];
+
+                if (query.includes("where email")) {
+                    const match = rawQuery.match(/['"]([^'"]+)['"]/);
+                    if (match) {
+                        const email = match[1];
+                        results = dbData.filter(u => u.email === email);
+                        renderTable(results);
+                        
+                        if(results.length > 0) {
+                            showTooltip("✅ Persistencia Validada", "El usuario existe y los datos coinciden con el registro del Frontend.");
+                            updateStatus(1, "0.02s");
+                        } else {
+                            output.innerHTML = '<div style="padding:40px; text-align:center; color:#ccc">0 resultados.</div>';
+                            updateStatus(0, "0.01s");
+                        }
+                    }
+                }
+                else if (query.includes("current_date") || query.includes("curdate")) {
+                    results = dbData.filter(u => u.created_at.startsWith(today));
+                    
+                    if (query.includes("count")) {
+                        renderCount(results.length);
+                        showTooltip("📊 Métrica Validada", `Hay ${results.length} registros creados hoy.`);
+                    } else {
+                        renderTable(results);
+                        showTooltip("📅 Registros del Día", `Se encontraron ${results.length} usuarios registrados hoy.`);
+                    }
+                    updateStatus(results.length, "0.02s");
+                }
+                else if (query.includes("select *")) {
+                    renderTable(dbData);
+                    showTooltip("🛡️ Integridad Estructural", "Todos los campos obligatorios (NOT NULL) tienen datos válidos.");
+                    updateStatus(dbData.length, "0.05s");
+                }
+                else {
+                    output.innerHTML = '<div style="padding:40px; text-align:center; color:#ef4444">⚠️ Por favor selecciona una consulta válida.</div>';
+                    status.innerText = "Error";
+                }
+            }, 300);
+        }
+
+        function showTooltip(title, desc) {
+            const area = document.getElementById('resultsArea');
+            const tip = document.createElement('div');
+            tip.className = 'pro-tooltip';
+            tip.innerHTML = `
+                <div class="tooltip-icon">↘️</div>
+                <div class="tooltip-content">
+                    <strong>${title}</strong>
+                    <span>${desc}</span>
+                </div>
+            `;
+            area.appendChild(tip);
+        }
+
+        function updateStatus(rows, time) {
+            const status = document.getElementById('statusMsg');
+            const timer = document.getElementById('timerMsg');
+            if (rows !== null) status.innerText = `Resultados: ${rows} filas devueltas`;
+            else status.innerText = "Resultado: Agregación Exitosa";
+            timer.innerText = `⏱ ${time}`;
+        }
+
+        function renderTable(data) {
+            let html = '<table class="sql-table"><thead><tr>';
+            Object.keys(data[0]).forEach(k => html += `<th>${k}</th>`);
+            html += '</tr></thead><tbody>';
+            data.forEach(row => {
+                html += '<tr>';
+                Object.values(row).forEach(v => html += `<td>${v}</td>`);
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+            document.getElementById('tableOutput').innerHTML = html;
+        }
+
+        function renderCount(n) {
+            document.getElementById('tableOutput').innerHTML = `<table class="sql-table"><thead><tr><th>total_count</th></tr></thead><tbody><tr><td>${n}</td></tr></tbody></table>`;
+        }
+    </script>
+
+</body>
+</html>

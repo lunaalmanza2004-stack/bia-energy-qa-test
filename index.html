@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna Almanza | QA & Data Science Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #04cebd;
+            --primary-dark: #02aea0;
+            --primary-light: #e0fbf9;
+            --dark: #0f172a;
+            --text-gray: #475569;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 95vh;
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            position: relative;
+            padding: 60px 0;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+            width: 100%;
+        }
+
+        .hero-text { flex: 1.2; z-index: 2; }
+
+        .logo { width: 90px; margin-bottom: 40px; display: block; }
+
+        .role-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .hero-text h1 span { color: var(--primary); }
+
+        .hero-text h2 {
+            font-size: 1.5rem;
+            color: var(--text-gray);
+            font-weight: 500;
+            margin-bottom: 25px;
+        }
+
+        .bio-text {
+            font-size: 1.05rem;
+            color: var(--text-gray);
+            margin-bottom: 30px;
+            max-width: 90%;
+            text-align: justify;
+        }
+
+        .skills-container { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 35px; }
+
+        .skill-pill {
+            font-size: 0.85rem;
+            padding: 5px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .hero-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--dark);
+            color: var(--white);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-primary:hover { transform: translateY(-3px); background: var(--primary); color: #000; }
+
+        .btn-outline { border: 2px solid var(--dark); color: var(--dark); }
+
+        .btn-outline:hover { background: var(--dark); color: var(--white); transform: translateY(-3px); }
+
+        /* IMAGEN DISEÑO MEJORADO */
+        .hero-image-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Marco ovalado animado */
+        .image-frame {
+            position: relative;
+            width: 450px;
+            height: 550px;
+            border-radius: 200px 200px 40px 40px; /* Forma ovalada moderna */
+            overflow: hidden;
+            background: #f0fdfc;
+            animation: morph 8s ease-in-out infinite;
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.05); /* Zoom sutil */
+        }
+
+        @keyframes morph {
+            0% { border-radius: 200px 200px 40px 40px; }
+            50% { border-radius: 220px 180px 60px 60px; transform: translateY(-10px); }
+            100% { border-radius: 200px 200px 40px 40px; }
+        }
+
+        /* SECCIÓN BIA */
+        .why-bia-section {
+            background: var(--dark);
+            color: var(--white);
+            padding: 80px 0;
+        }
+
+        .why-bia-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .why-text h2 { font-size: 2.5rem; margin-bottom: 20px; color: var(--primary); }
+        .why-text p { margin-bottom: 20px; opacity: 0.9; font-size: 1.1rem; }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-box h3 { color: var(--primary); font-size: 1.2rem; margin-bottom: 10px; }
+
+        /* PRUEBAS */
+        .test-section { padding: 100px 0; background: var(--white); }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 2.5rem; margin-bottom: 15px; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .test-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 35px 25px;
+            text-decoration: none;
+            color: var(--dark);
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .test-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        .test-card:hover::before { opacity: 1; }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: var(--primary-light);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .test-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
+        .test-card p { font-size: 0.95rem; color: var(--text-gray); margin-bottom: 20px; }
+        
+        .card-link {
+            margin-top: auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        footer {
+            background: #f1f5f9;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 900px) {
+            .hero-content { flex-direction: column-reverse; text-align: center; padding-top: 20px; }
+            .hero-text { align-items: center; display: flex; flex-direction: column; }
+            .skills-container { justify-content: center; }
+            .hero-text h1 { font-size: 2.5rem; }
+            .hero-image-wrapper { width: 100%; margin-bottom: 30px; }
+            .image-frame { width: 300px; height: 380px; }
+            .why-bia-content { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <div class="container hero-content">
+            
+            <div class="hero-text">
+                <img src="logo-bia.png" alt="Bia Energy" class="logo">
+                
+                <span class="role-badge">QA Analyst | Data Science Student</span>
+                
+                <h1>Hola, soy <br><span>Luna Almanza Mercado</span></h1>
+                <h2>Desarrolladora / Data Science / QA</h2>
+
+                <p class="bio-text">
+                    Developer con enfoque en <strong>Data Science</strong> y actualmente <strong>QA Analyst</strong>. 
+                    Combino programación en Python con análisis de datos para la automatización de pruebas 
+                    y la creación de dashboards, garantizando calidad, eficiencia y toma de decisiones 
+                    basada en KPIs a lo largo del ciclo de vida del software.
+                </p>
+
+                <div class="skills-container">
+                    <span class="skill-pill">🐍 Python</span>
+                    <span class="skill-pill">📊 Data Analysis</span>
+                    <span class="skill-pill">🤖 Automation</span>
+                    <span class="skill-pill">⚡ QA Testing</span>
+                    <span class="skill-pill">📈 SQL</span>
+                </div>
+
+                <div class="hero-buttons">
+                    <a href="#prueba-tecnica" class="btn btn-primary">Ver Prueba Técnica 🚀</a>
+                    <a href="https://www.linkedin.com/in/luna-almanza" target="_blank" class="btn btn-outline">LinkedIn</a>
+                    <a href="https://lunaalmanza2004-stack.github.io/portafolio-luna/" target="_blank" class="btn btn-outline">Portafolio</a>
+                </div>
+            </div>
+
+            <div class="hero-image-wrapper">
+                <div class="image-frame">
+                    <img src="Foto.luna-custom.png" alt="Luna Almanza" class="profile-pic">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="why-bia-section">
+        <div class="container why-bia-content">
+            <div class="why-text">
+                <h2>¿Por qué Bia Energy?</h2>
+                <p>
+                    Mi objetivo es unirme a Bia Energy como <strong>QA Analyst</strong> porque admiro su enfoque disruptivo en el sector energético.
+                </p>
+                <p>
+                    Como profesional que combina el aseguramiento de calidad con la ciencia de datos, veo en Bia el entorno ideal para aplicar mis habilidades:
+                    <strong>automatizar procesos complejos</strong>, analizar métricas de rendimiento y asegurar que la tecnología no solo funcione, sino que brille.
+                </p>
+                <p>
+                    Quiero aportar mi experiencia previa en análisis de negocio y pruebas (KWALI) para garantizar que los productos de Bia sigan transformando la energía en Latinoamérica.
+                </p>
+            </div>
+            
+            <div class="stat-box">
+                <h3>💼 Experiencia Relevante</h3>
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">Currently: <strong>Business Analyst QA @ KWALI</strong></p>
+                <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6;">
+                    <li>Análisis de requisitos y ejecución de pruebas.</li>
+                    <li>Reportes basados en datos para la toma de decisiones.</li>
+                    <li>Optimización del ciclo de vida del desarrollo.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="prueba-tecnica" class="test-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>QA Technical Test</h2>
+                <p>Desarrollo de los módulos solicitados para la vacante.</p>
+            </div>
+
+            <div class="cards-grid">
+                <a href="part1.html" class="test-card">
+                    <div class="card-icon">📝</div>
+                    <h3>Parte 1: Testing Manual</h3>
+                    <p>Casos de prueba detallados en Gherkin y análisis de escenarios.</p>
+                    <span class="card-link">Ver desarrollo →</span>
+                </a>
+
+                <a href="part2.html" class="test-card">
+                    <div class="card-icon">🔌</div>
+                    <h3>Parte 2: API Testing</h3>
+                    <p>Validación de endpoints, códigos de estado y pruebas en Postman.</p>
+                    <span class="card-link">Ver desarrollo →</span>
+                </a>
+
+                <a href="part3.html" class="test-card">
+                    <div class="card-icon">🗄️</div>
+                    <h3>Parte 3: SQL & DB</h3>
+                    <p>Consultas para validación de datos e integridad referencial.</p>
+                    <span class="card-link">Ver desarrollo →</span>
+                </a>
+
+                <a href="part4.html" class="test-card">
+                    <div class="card-icon">🤖</div>
+                    <h3>Parte 4: Automatización</h3>
+                    <p>Estrategia de automatización y uso de IA en QA.</p>
+                    <span class="card-link">Ver desarrollo →</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>
+            <strong>Luna Almanza Mercado</strong><br>
+            +57 314 522 9832 | lunaalmanza2004@gmail.com<br>
+            Bogotá, Colombia · 2026
+        </p>
+    </footer>
+
+</body>
+</html>
