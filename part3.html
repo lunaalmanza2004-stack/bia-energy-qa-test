@@ -30,6 +30,7 @@
         header h1 { color: var(--bia-dark); margin: 0; font-size: 2.2rem; letter-spacing: -1px; }
         header p { color: #64748b; font-size: 1.1rem; margin-top: 10px; }
 
+        /* --- IDE WRAPPER (PUNTO 1 - INTACTO) --- */
         .sql-ide-wrapper {
             display: grid;
             grid-template-columns: 260px 1fr;
@@ -135,71 +136,58 @@
 
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- SECCIÓN 2 REDISEÑADA (Sin Imagen) --- */
         .expert-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
             margin-top: 60px;
             background: #fff;
-            padding: 40px;
+            padding: 50px;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.05);
             border: 1px solid #e2e8f0;
-            align-items: start;
         }
 
-        .avatar-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tech-girl-img { 
-            width: 100%; 
-            height: auto;
-            max-height: 500px;
-            object-fit: cover;
-            border-radius: 16px; 
-            box-shadow: 0 20px 40px rgba(4, 206, 189, 0.2); 
-        }
-        
-        .content-column { display: flex; flex-direction: column; gap: 20px; }
-        
         .intro-text { 
             background: #f8fafc; 
-            padding: 20px; 
+            padding: 30px; 
             border-radius: 12px; 
             border-left: 5px solid #0f172a; 
             color: #334155; 
-            line-height: 1.6; 
-            font-size: 1rem; 
+            line-height: 1.8; 
+            font-size: 1.1rem; 
+            margin-bottom: 40px;
+            text-align: justify;
         }
         
-        .cards-grid { display: grid; gap: 15px; }
+        /* Grid de 3 columnas para las tarjetas */
+        .cards-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 25px; 
+        }
         
         .info-card { 
             background: #fff; 
-            padding: 15px 20px; 
+            padding: 25px; 
             border: 1px solid #e2e8f0; 
-            border-radius: 10px; 
-            transition: all 0.2s; 
-            border-left: 4px solid transparent;
+            border-radius: 12px; 
+            transition: all 0.3s; 
+            border-top: 4px solid transparent; /* Borde superior en lugar de izquierdo */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
+        
         .info-card:hover { 
-            transform: translateX(5px); 
-            border-left-color: var(--bia-cyan); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+            transform: translateY(-5px); 
+            border-top-color: var(--bia-cyan); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08); 
         }
-        .info-card h3 { margin: 0 0 5px 0; font-size: 1rem; color: #0f172a; display: flex; align-items: center; gap: 8px; }
-        .info-card p { margin: 0; font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+        
+        .info-card h3 { margin: 0 0 15px 0; font-size: 1.1rem; color: #0f172a; display: flex; align-items: center; gap: 10px; }
+        .info-card p { margin: 0; font-size: 0.95rem; color: #64748b; line-height: 1.6; }
 
         @media (max-width: 900px) { 
             .sql-ide-wrapper { grid-template-columns: 1fr; } 
             .sidebar { display: none; } 
-            .expert-section { grid-template-columns: 1fr; } 
-            .tech-girl-img { max-height: 300px; margin-bottom: 20px; }
+            .expert-section { padding: 30px; }
         }
     </style>
 </head>
@@ -297,44 +285,44 @@
             </div>
         </div>
 
-        <h2 style="margin-bottom:10px; color:#0f172a;">2. Importancia de SQL en QA</h2>
+        <h2 style="margin-bottom:20px; color:#0f172a;">2. Importancia de SQL en QA</h2>
         
         <div class="expert-section">
-            <div class="avatar-container">
-                <div class="blob-bg"></div>
-                <img src="imagen parte 3.png" alt="QA Engineer" class="tech-girl-img">
+            
+            <div class="intro-text">
+                <strong>El conocimiento de Bases de Datos es una competencia crítica para un QA moderno.</strong> 
+                No basta con validar la interfaz; es necesario garantizar la integridad, persistencia y precisión de la información en el origen. El dominio de SQL permite verificar transacciones directamente en el backend, acelerar la detección de errores y asegurar que la lógica de negocio se cumple a nivel de datos.
             </div>
 
-            <div class="content-column">
-                <div class="intro-text">
-                    <strong>Es fundamental que QA conozca bases de datos</strong> para validar la integridad, persistencia y precisión de la información. El conocimiento en SQL permite verificar transacciones directamente en el backend, acelerar la detección de errores y garantizar que los datos se almacenan correctamente.
+            <div class="cards-grid">
+                <div class="info-card">
+                    <h3>🔍 Verificación Backend</h3>
+                    <p>Permite confirmar que los datos mostrados en el Frontend coinciden exactamente con lo almacenado en la Base de Datos, detectando discrepancias de visualización.</p>
                 </div>
 
-                <div class="cards-grid">
-                    <div class="info-card">
-                        <h3>🔍 Verificación Directa (Backend)</h3>
-                        <p>Permite confirmar que lo que muestra la UI coincide con la BD.</p>
-                    </div>
+                <div class="info-card">
+                    <h3>🛡️ Integridad de Datos</h3>
+                    <p>Asegura que se respeten las reglas de negocio, como unicidad de correos, formatos de documentos y relaciones correctas entre tablas.</p>
+                </div>
 
-                    <div class="info-card">
-                        <h3>🛡️ Validación de Integridad</h3>
-                        <p>Asegura que no haya pérdida de datos ni duplicados inválidos.</p>
-                    </div>
+                <div class="info-card">
+                    <h3>🧪 Creación de Datos</h3>
+                    <p>Facilita la generación masiva de escenarios de prueba (ej: usuarios con estados específicos) mediante scripts, sin depender de la lentitud de la UI.</p>
+                </div>
 
-                    <div class="info-card">
-                        <h3>🧪 Creación de Datos de Prueba</h3>
-                        <p>Facilita la generación masiva de escenarios complejos vía SQL.</p>
-                    </div>
+                <div class="info-card">
+                    <h3>⏱️ Eficiencia</h3>
+                    <p>Validar miles de registros toma milisegundos con una consulta SQL, comparado con horas de revisión manual pantalla por pantalla.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🐛 Detección Temprana</h3>
+                    <p>Identificar errores en la estructura o guardado de datos antes de que impacten al usuario final o rompan flujos críticos.</p>
+                </div>
 
-                    <div class="info-card">
-                        <h3>⏱️ Optimización del Tiempo</h3>
-                        <p>Validación masiva de registros en milisegundos vs manual.</p>
-                    </div>
-                    
-                    <div class="info-card">
-                        <h3>🐛 Detección Temprana</h3>
-                        <p>Identificar problemas de estructura antes de que afecten al usuario.</p>
-                    </div>
+                <div class="info-card">
+                    <h3>📊 Análisis de Impacto</h3>
+                    <p>Entender qué tablas y registros se ven afectados tras una migración o despliegue de nuevas funcionalidades.</p>
                 </div>
             </div>
         </div>
